@@ -1,0 +1,593 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইসলামিক কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap');
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --light-color: #ecf0f1;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --font-family: 'Tiro Bangla', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 300% 300%;
+            animation: gradient-animation 15s ease infinite;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        /* --- Start Screen --- */
+        #start-screen h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        #start-screen p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #555;
+        }
+
+        .start-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.5rem;
+            font-family: var(--font-family);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+        }
+        
+        /* --- Quiz Screen --- */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        #question-counter {
+            background: var(--secondary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .timer-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        #timer-circle {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        #timer-path {
+            stroke: var(--correct-color);
+            stroke-width: 5;
+            stroke-linecap: round;
+            fill: none;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        #timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--correct-color);
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .question-card {
+            background-color: var(--light-color);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .question-card.fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        #question-text {
+            font-size: 1.6rem;
+            margin-bottom: 2rem;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .option {
+            background-color: white;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-family: var(--font-family);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover:not(:disabled) {
+            background-color: var(--secondary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .option:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .option.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: white;
+            animation: pulse-green 0.8s;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-color);
+            border-color: var(--incorrect-color);
+            color: white;
+            animation: pulse-red 0.8s;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 10px 15px rgba(46, 204, 113, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 10px 15px rgba(231, 76, 60, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nav-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+            font-family: var(--font-family);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background-color: #566573;
+        }
+        
+        .nav-button:disabled {
+            background-color: #99a3a4;
+            cursor: not-allowed;
+        }
+
+        /* --- End Screen --- */
+        #end-screen h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        #score-text {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            font-weight: bold;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+            #start-screen h1 {
+                font-size: 2.5rem;
+            }
+            .start-button {
+                padding: 0.8rem 2rem;
+                font-size: 1.3rem;
+            }
+            #question-text {
+                font-size: 1.3rem;
+            }
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            .option {
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
+            .nav-button {
+                padding: 0.6rem 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h1>ইসলামিক কুইজ</h1>
+            <p>আপনার ইসলামিক জ্ঞান পরীক্ষা করুন!</p>
+            <button id="start-button" class="start-button">কুইজ খেলুন</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="quiz-header">
+                <span id="question-counter"></span>
+                <div class="timer-container">
+                    <svg id="timer-circle">
+                        <circle cx="30" cy="30" r="25" fill="none" stroke="#e0e0e0" stroke-width="5"></circle>
+                        <path id="timer-path" d="M 30,5 A 25 25 0 1 1 29.99 5" stroke-dasharray="157" stroke-dashoffset="157"></path>
+                    </svg>
+                    <div id="timer-text">10</div>
+                </div>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            
+            <div id="question-card" class="question-card">
+                <h2 id="question-text"></h2>
+                <div class="options-container">
+                    <button class="option" data-option="1"></button>
+                    <button class="option" data-option="2"></button>
+                    <button class="option" data-option="3"></button>
+                    <button class="option" data-option="4"></button>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button id="prev-button" class="nav-button">পূর্ববর্তী</button>
+                <button id="next-button" class="nav-button">পরবর্তী</button>
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="hidden">
+            <h2>কুইজ সমাপ্ত!</h2>
+            <p id="score-text"></p>
+            <button id="restart-button" class="start-button">পুনরায় খেলুন</button>
+        </div>
+    </div>
+    
+    <!-- Sound Effects -->
+    <audio id="correct-sound" src="https://files.catbox.moe/qd0a5c.mp3" preload="auto"></audio>
+    <audio id="incorrect-sound" src="https://files.catbox.moe/55gwnv.mp3" preload="auto"></audio>
+    <audio id="bg-music" src="https://files.catbox.moe/g8nzkj.mp3" loop preload="auto"></audio>
+
+    <script>
+        const questions = [
+            { question: "ইসলামের পাঁচটি স্তম্ভের প্রথমটি কী?", options: ["নামাজ", "ঈমান", "হজ্জ", "যাকাত"], answer: "ঈমান" },
+            { question: "পবিত্র কুরআন শরীফে মোট কতটি সূরা আছে?", options: ["১১৪টি", "১১০টি", "১২০টি", "১১৫টি"], answer: "১১৪টি" },
+            { question: "সর্বপ্রথম কোন নবীর উপর আসমানি কিতাব নাজিল হয়?", options: ["হযরত মুসা (আঃ)", "হযরত ইব্রাহিম (আঃ)", "হযরত দাউদ (আঃ)", "হযরত আদম (আঃ)"], answer: "হযরত মুসা (আঃ)" },
+            { question: "ইসলামের শেষ নবী কে?", options: ["হযরত ঈসা (আঃ)", "হযরত মুহাম্মদ (ﷺ)", "হযরত মুসা (আঃ)", "হযরত ইব্রাহিম (আঃ)"], answer: "হযরত মুহাম্মদ (ﷺ)" },
+            { question: "কোন সূরাকে কুরআনের לב (হৃদয়) বলা হয়?", options: ["সূরা ফাতিহা", "সূরা আর-রাহমান", "সূরা ইয়াসিন", "সূরা বাকারা"], answer: "সূরা ইয়াসিন" },
+            { question: "বদরের যুদ্ধ কোন হিজরি সনে সংঘটিত হয়েছিল?", options: ["প্রথম হিজরি", "দ্বিতীয় হিজরি", "তৃতীয় হিজরি", "চতুর্থ হিজরি"], answer: "দ্বিতীয় হিজরি" },
+            { question: "কোন সাহাবীকে 'সাইফুল্লাহ' বা 'আল্লাহর তলোয়ার' উপাধি দেওয়া হয়েছিল?", options: ["হযরত উমর (রাঃ)", "হযরত আলী (রাঃ)", "হযরত খালিদ বিন ওয়ালিদ (রাঃ)", "হযরত আবু বকর (রাঃ)"], answer: "হযরত খালিদ বিন ওয়ালিদ (রাঃ)" },
+            { question: "যাকাত কাদের উপর ফরজ?", options: ["সকল মুসলমান", "শুধুমাত্র পুরুষ", "নিসাব পরিমাণ সম্পদের মালিক", "শুধুমাত্র ধনী ব্যবসায়ী"], answer: "নিসাব পরিমাণ সম্পদের মালিক" },
+            { question: "হযরত মুহাম্মদ (ﷺ) কত বছর বয়সে নবুয়াত লাভ করেন?", options: ["৩০ বছর", "৩৫ বছর", "৪০ বছর", "৪৫ বছর"], answer: "৪০ বছর" },
+            { question: "কুরআনের সবচেয়ে ছোট সূরা কোনটি?", options: ["সূরা নাস", "সূরা ফালাক", "সূরা ইখলাস", "সূরা কাউসার"], answer: "সূরা কাউসার" },
+            { question: "হিজরত বলতে কী বোঝায়?", options: ["যুদ্ধ করা", "এক স্থান থেকে অন্য স্থানে গমন", "মক্কা থেকে মদিনায় গমন", "দান করা"], answer: "মক্কা থেকে মদিনায় গমন" },
+            { question: "রোজা ইসলামের কততম স্তম্ভ?", options: ["দ্বিতীয়", "তৃতীয়", "চতুর্থ", "পঞ্চম"], answer: "চতুর্থ" },
+            { question: "কোন ফেরেশতা ওহী নিয়ে আসতেন?", options: ["মিকাইল (আঃ)", "ইসরাফিল (আঃ)", "জিবরাঈল (আঃ)", "আজরাইল (আঃ)"], answer: "জিবরাঈল (আঃ)" },
+            { question: "কুরআনের কোন সূরাটি 'বিসমিল্লাহ' ছাড়া শুরু হয়েছে?", options: ["সূরা তাওবা", "সূরা ইউনুস", "সূরা আনফাল", "সূরা হুদ"], answer: "সূরা তাওবা" },
+            { question: "হজ্জ বছরে কতবার করা যায়?", options: ["দুইবার", "যতবার ইচ্ছা", "একবার", "তিনবার"], answer: "একবার" },
+            { question: "ইসলামী ক্যালেন্ডারের প্রথম মাস কোনটি?", options: ["রমজান", "মহররম", "সফর", "রবিউল আউয়াল"], answer: "মহররম" },
+        	{ question: "কিয়ামতের দিন সর্বপ্রথম কোন বিষয়ের হিসাব নেওয়া হবে?", options: ["রোজা", "হজ্জ", "যাকাত", "নামাজ"], answer: "নামাজ" },
+            { question: "'খাতামুন নাবিয়্যিন' অর্থ কী?", options: ["প্রথম নবী", "শ্রেষ্ঠ নবী", "সর্বশেষ নবী", "প্রিয় নবী"], answer: "সর্বশেষ নবী" },
+            { question: "কোন নবীকে 'খলিলুল্লাহ' বা 'আল্লাহর বন্ধু' বলা হয়?", options: ["হযরত মুসা (আঃ)", "হযরত ঈসা (আঃ)", "হযরত মুহাম্মদ (ﷺ)", "হযরত ইব্রাহিম (আঃ)"], answer: "হযরত ইব্রাহিম (আঃ)" },
+            { question: "আশুরা কোন মাসে পালিত হয়?", options: ["রমজান", "মহররম", "শাওয়াল", "জিলহজ্জ"], answer: "মহররম" },
+            { question: "কুরআনের কোন সূরাটি পাঠ করলে এক তৃতীয়াংশ কুরআন পাঠের সওয়াব পাওয়া যায়?", options: ["সূরা ফাতিহা", "সূরা ইখলাস", "সূরা নাস", "সূরা ফালাক"], answer: "সূরা ইখলাস" },
+            { question: "লাইলাতুল কদর কোন মাসে হয়?", options: ["শাবান", "মহররম", "রমজান", "রবিউল আউয়াল"], answer: "রমজান" },
+            { question: "হযরত মুহাম্মদ (ﷺ) এর পিতার নাম কী?", options: ["আব্দুল মুত্তালিব", "আবু তালিব", "আব্দুল্লাহ", "হামজা"], answer: "আব্দুল্লাহ" },
+            { question: "ইসলামের প্রথম খলিফা কে ছিলেন?", options: ["হযরত উমর (রাঃ)", "হযরত উসমান (রাঃ)", "হযরত আলী (রাঃ)", "হযরত আবু বকর (রাঃ)"], answer: "হযরত আবু বকর (রাঃ)" },
+            { question: "ইসরা ও মি'রাজ কীসের সাথে সম্পর্কিত?", options: ["নবীর জন্ম", "নবীর রাতের ভ্রমণ", "প্রথম ওহী নাজিল", "হিজরত"], answer: "নবীর রাতের ভ্রমণ" },
+            { question: "কোন নবীর মোজেজা ছিল মৃতকে জীবিত করা?", options: ["হযরত মুসা (আঃ)", "হযরত ঈসা (আঃ)", "হযরত সুলাইমান (আঃ)", "হযরত দাউদ (আঃ)"], answer: "হযরত ঈসা (আঃ)" },
+            { question: "মসজিদে আকসা কোথায় অবস্থিত?", options: ["মক্কা", "মদিনা", "জেরুজালেম", "দামেস্ক"], answer: "জেরুজালেম" },
+            { question: "'আসমাউল হুসনা' বলতে কী বোঝায়?", options: ["নবীগণের নাম", "ফেরেশতাদের নাম", "আল্লাহর সুন্দর নামসমূহ", "সাহাবীদের নাম"], answer: "আল্লাহর সুন্দর নামসমূহ" },
+            { question: "কুরআন মজিদ কত বছরে নাজিল হয়েছে?", options: ["১০ বছরে", "২০ বছরে", "প্রায় ২৩ বছরে", "৩০ বছরে"], answer: "প্রায় ২৩ বছরে" },
+            { question: "জান্নাতের প্রধান দরজার নাম কী?", options: ["বাব-উস-সালাত", "বাব-উর-রাইয়ান", "বাব-আল-জিহাদ", "বাব-উস-সাদাকাহ"], answer: "বাব-উর-রাইয়ান" },
+            { question: "কোন যুদ্ধকে 'ফুরকানের দিন' বলা হয়?", options: ["ওহুদের যুদ্ধ", "খন্দকের যুদ্ধ", "বদরের যুদ্ধ", "তাবুকের যুদ্ধ"], answer: "বদরের যুদ্ধ" },
+            { question: "কুরআনের সবচেয়ে বড় সূরা কোনটি?", options: ["সূরা আর-রাহমান", "সূরা আল-ইমরান", "সূরা নিসা", "সূরা বাকারা"], answer: "সূরা বাকারা" },
+            { question: "হাদিস কাকে বলে?", options: ["আল্লাহর বাণী", "নবী (ﷺ) এর বাণী, কাজ ও সম্মতি", "সাহাবীদের কথা", "ইসলামী আইন"], answer: "নবী (ﷺ) এর বাণী, কাজ ও সম্মতি" },
+            { question: "কোন নবীর অনুসারীদের ইহুদি বলা হয়?", options: ["হযরত ঈসা (আঃ)", "হযরত মুসা (আঃ)", "হযরত দাউদ (আঃ)", "হযরত ইব্রাহিম (আঃ)"], answer: "হযরত মুসা (আঃ)" },
+            { question: "ওযু করার সময় কতটি অঙ্গ ধোয়া ফরজ?", options: ["তিনটি", "চারটি", "পাঁচটি", "ছয়টি"], answer: "চারটি" },
+            { question: "কোন নবীর উপাধি ছিল 'রুহুল্লাহ'?", options: ["হযরত আদম (আঃ)", "হযরত নূহ (আঃ)", "হযরত ঈসা (আঃ)", "হযরত ইদ্রিস (আঃ)"], answer: "হযরত ঈসা (আঃ)" },
+            { question: "ইসলামের তৃতীয় খলিফা কে ছিলেন?", options: ["হযরত আবু বকর (রাঃ)", "হযরত উমর (রাঃ)", "হযরত উসমান (রাঃ)", "হযরত আলী (রাঃ)"], answer: "হযরত উসমান (রাঃ)" },
+            { question: "তারাবীহ নামাজ কোন মাসে পড়া হয়?", options: ["শাওয়াল", "রমজান", "মহররম", "জিলহজ্জ"], answer: "রমজান" },
+            { question: "কোন নবী মাছের পেটে ছিলেন?", options: ["হযরত ইউসুফ (আঃ)", "হযরত আইয়ুব (আঃ)", "হযরত ইউনুস (আঃ)", "হযরত জাকারিয়া (আঃ)"], answer: "হযরত ইউনুস (আঃ)" },
+            { question: "ইসলামী শরীয়তের প্রধান উৎস কয়টি?", options: ["একটি", "দুইটি", "তিনটি", "চারটি"], answer: "চারটি" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const endScreen = document.getElementById('end-screen');
+        
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const questionCard = document.getElementById('question-card');
+        const questionText = document.getElementById('question-text');
+        const optionButtons = document.querySelectorAll('.option');
+        const scoreText = document.getElementById('score-text');
+        
+        const timerText = document.getElementById('timer-text');
+        const timerPath = document.getElementById('timer-path');
+        const TIME_LIMIT = 10;
+        const FULL_DASH_ARRAY = 157; // Circumference of the circle
+
+        const correctSound = document.getElementById('correct-sound');
+        const incorrectSound = document.getElementById('incorrect-sound');
+        const bgMusic = document.getElementById('bg-music');
+
+        // State variables
+        let shuffledQuestions, currentQuestionIndex, score, timerInterval, timeLeft, userAnswers;
+
+        // Event Listeners
+        startButton.addEventListener('click', startQuiz);
+        restartButton.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        });
+        nextButton.addEventListener('click', showNextQuestion);
+        prevButton.addEventListener('click', showPrevQuestion);
+        optionButtons.forEach(button => {
+            button.addEventListener('click', selectAnswer);
+        });
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+
+            bgMusic.volume = 0.3;
+            bgMusic.play().catch(e => console.log("Background music play failed:", e));
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            
+            questionText.innerText = currentQuestion.question;
+            optionButtons.forEach((button, index) => {
+                button.innerText = `(${"১ ২ ৩ ৪".split(' ')[index]}) ${currentQuestion.options[index]}`;
+            });
+
+            updateProgress();
+            
+            if (userAnswers[currentQuestionIndex] !== null) {
+                showAnswerResult();
+            } else {
+                startTimer();
+            }
+        }
+
+        function showAnswerResult() {
+            clearInterval(timerInterval);
+            timerText.textContent = '✓';
+            setCircleDasharray(0);
+
+            const { selectedOption, correctAnswer } = userAnswers[currentQuestionIndex];
+            const correctOptionButton = Array.from(optionButtons).find(btn => btn.innerText.includes(correctAnswer));
+            const selectedOptionButton = Array.from(optionButtons).find(btn => btn.innerText.includes(selectedOption));
+
+            correctOptionButton.classList.add('correct');
+            if (selectedOption !== correctAnswer) {
+                selectedOptionButton.classList.add('incorrect');
+            }
+            optionButtons.forEach(btn => btn.disabled = true);
+        }
+
+        function resetState() {
+            optionButtons.forEach(button => {
+                button.classList.remove('correct', 'incorrect');
+                button.disabled = false;
+            });
+            nextButton.disabled = true;
+        }
+
+        function updateProgress() {
+            questionCounter.innerText = `প্রশ্ন ${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
+            const progressPercent = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            
+            prevButton.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === shuffledQuestions.length - 1) {
+                nextButton.innerText = "ফলাফল দেখুন";
+            } else {
+                nextButton.innerText = "পরবর্তী";
+            }
+        }
+
+        function transitionQuestion(loadFunction) {
+            questionCard.classList.add('fade-out');
+            setTimeout(() => {
+                loadFunction();
+                questionCard.classList.remove('fade-out');
+            }, 500);
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                currentQuestionIndex++;
+                transitionQuestion(loadQuestion);
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showPrevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                transitionQuestion(loadQuestion);
+            }
+        }
+
+        function selectAnswer(e) {
+            clearInterval(timerInterval);
+            const selectedButton = e.target;
+            const selectedAnswer = selectedButton.innerText.substring(selectedButton.innerText.indexOf(')') + 2);
+            const correctAnswer = shuffledQuestions[currentQuestionIndex].answer;
+
+            userAnswers[currentQuestionIndex] = { selectedOption: selectedAnswer, correctAnswer: correctAnswer };
+
+            if (selectedAnswer === correctAnswer) {
+                score++;
+                selectedButton.classList.add('correct');
+                correctSound.play();
+            } else {
+                selectedButton.classList.add('incorrect');
+                incorrectSound.play();
+                // Show the correct answer
+                const correctButton = Array.from(optionButtons).find(btn => btn.innerText.includes(correctAnswer));
+                correctButton.classList.add('correct');
+            }
+
+            optionButtons.forEach(button => button.disabled = true);
+            nextButton.disabled = false;
+        }
+
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            setCircleDasharray(timeLeft);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                setCircleDasharray(timeLeft);
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+        
+        function handleTimeOut() {
+            const correctAnswer = shuffledQuestions[currentQuestionIndex].answer;
+            userAnswers[currentQuestionIndex] = { selectedOption: "সময় শেষ", correctAnswer: correctAnswer };
+            const correctButton = Array.from(optionButtons).find(btn => btn.innerText.includes(correctAnswer));
+            correctButton.classList.add('correct');
+            optionButtons.forEach(button => button.disabled = true);
+            nextButton.disabled = false;
+            incorrectSound.play();
+        }
+
+        function setCircleDasharray(time) {
+            const rawTimeFraction = time / TIME_LIMIT;
+            const timeFraction = rawTimeFraction - (1 / TIME_LIMIT) * (1 - rawTimeFraction);
+            const dashoffset = timeFraction * FULL_DASH_ARRAY;
+            timerPath.setAttribute('stroke-dashoffset', 157 - dashoffset);
+        }
+
+        function showEndScreen() {
+            quizScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            scoreText.innerText = `আপনি ${shuffledQuestions.length} টির মধ্যে ${score} টি সঠিক উত্তর দিয়েছেন!`;
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+        }
+    </script>
+</body>
+</html>
